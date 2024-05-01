@@ -9,10 +9,14 @@ import { Category, defaultProblem, ProblemState, SortingStrategy } from "../shar
 import { shouldHideSolvedProblem } from "../utils/settingUtils";
 import { LeetCodeNode } from "./LeetCodeNode";
 
+//TODO: predefine a list o study plans based on their slugs to be present in explorer
+// currently no GraphQL API exists to fetch them all, temporary alternative
+
 class ExplorerNodeManager implements Disposable {
     private explorerNodeMap: Map<string, LeetCodeNode> = new Map<string, LeetCodeNode>();
     private companySet: Set<string> = new Set<string>();
     private tagSet: Set<string> = new Set<string>();
+    //TODO: persist study plans with their subgroups (Set<Set<string>>?)
 
     public async refreshCache(): Promise<void> {
         this.dispose();
@@ -29,6 +33,7 @@ class ExplorerNodeManager implements Disposable {
                 this.tagSet.add(tag);
             }
         }
+        // TODO: fetch study plans and update problems' metadata
     }
 
     public getRootNodes(): LeetCodeNode[] {
@@ -48,6 +53,10 @@ class ExplorerNodeManager implements Disposable {
             new LeetCodeNode(Object.assign({}, defaultProblem, {
                 id: Category.Company,
                 name: Category.Company,
+            }), false),
+            new LeetCodeNode(Object.assign({}, defaultProblem, {
+                id: Category.StudyPlans,
+                name: Category.StudyPlans,
             }), false),
             new LeetCodeNode(Object.assign({}, defaultProblem, {
                 id: Category.Favorite,
@@ -81,6 +90,8 @@ class ExplorerNodeManager implements Disposable {
         this.sortSubCategoryNodes(res, Category.Difficulty);
         return res;
     }
+
+    //TODO: getter for all study plans (and for subgroups)
 
     public getAllCompanyNodes(): LeetCodeNode[] {
         const res: LeetCodeNode[] = [];
@@ -141,6 +152,7 @@ class ExplorerNodeManager implements Disposable {
                         res.push(node);
                     }
                     break;
+                //TODO: handle study plans
                 default:
                     break;
             }

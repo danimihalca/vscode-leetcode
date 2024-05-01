@@ -47,6 +47,8 @@ export class LeetCodeNode {
         return this.isProblemNode;
     }
 
+    //TODO: add study plan and subgroup
+
     public get previewCommand(): Command {
         return {
             title: "Preview Problem",
