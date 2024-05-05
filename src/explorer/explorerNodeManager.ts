@@ -16,7 +16,7 @@ class ExplorerNodeManager implements Disposable {
     private explorerNodeMap: Map<string, LeetCodeNode> = new Map<string, LeetCodeNode>();
     private companySet: Set<string> = new Set<string>();
     private tagSet: Set<string> = new Set<string>();
-    //TODO: persist study plans with their subgroups (Set<Set<string>>?)
+    private studyPlans: Map<string, Set<string>> = new Map<string, Set<string>>();
 
     public async refreshCache(): Promise<void> {
         this.dispose();
@@ -33,7 +33,19 @@ class ExplorerNodeManager implements Disposable {
                 this.tagSet.add(tag);
             }
         }
-        // TODO: fetch study plans and update problems' metadata
+        let rrr = await list.listStudyPlanProblems("binary-search");
+        const groupName = rrr.name;
+        this.studyPlans[groupName] = new Set<string>();
+        for (const subGroupKey in rrr.planSubGroups) {
+            const subGroup = rrr.planSubGroups[subGroupKey];
+            const subGroupName = subGroup.name;
+            this.studyPlans[groupName].add(subGroupName);
+            for (let questionKey in subGroup.questions) {
+                this.explorerNodeMap[subGroup.questions[questionKey].id].studyPlans().append({groupName, subGroupName});
+            }
+
+        }
+        console.log(rrr);
     }
 
     public getRootNodes(): LeetCodeNode[] {

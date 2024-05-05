@@ -80,6 +80,7 @@ export interface IProblem {
     passRate: string;
     companies: string[];
     tags: string[];
+    studyPlans: Record<string, string>[];
 }
 
 export const defaultProblem: IProblem = {
@@ -92,6 +93,7 @@ export const defaultProblem: IProblem = {
     passRate: "",
     companies: [] as string[],
     tags: [] as string[],
+    studyPlans: [] as Record<string, string>[]
 };
 
 export enum Category {

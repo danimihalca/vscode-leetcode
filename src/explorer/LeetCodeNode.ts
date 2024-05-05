@@ -47,6 +47,10 @@ export class LeetCodeNode {
         return this.isProblemNode;
     }
 
+    public get studyPlans(): Record<string, string>[] {
+        return this.studyPlans;
+    }
+
     //TODO: add study plan and subgroup
 
     public get previewCommand(): Command {
