@@ -20,8 +20,9 @@ class LeetCodeExecutor implements Disposable {
     private configurationChangeListener: Disposable;
 
     constructor() {
-        this.leetCodeRootPath = path.join(__dirname, "..", "..", "node_modules", "vsc-leetcode-cli");
+        this.leetCodeRootPath = path.join(__dirname, "..", "..", "node_modules", "@danimihalca", "vsc-leetcode-cli");
         this.nodeExecutable = this.getNodePath();
+        console.log(this.nodeExecutable);
         this.configurationChangeListener = workspace.onDidChangeConfiguration((event: ConfigurationChangeEvent) => {
             if (event.affectsConfiguration("leetcode.nodePath")) {
                 this.nodeExecutable = this.getNodePath();
@@ -97,6 +98,12 @@ class LeetCodeExecutor implements Disposable {
             cmd.push("-q");
             cmd.push("L");
         }
+        return await this.executeCommandEx(this.nodeExecutable, cmd);
+    }
+
+    public async studyPlanProblems(studyPlan: string): Promise<string> {
+        const cmd: string[] = [await this.getLeetCodeBinaryPath(), "studyplan", studyPlan];
+
         return await this.executeCommandEx(this.nodeExecutable, cmd);
     }
 

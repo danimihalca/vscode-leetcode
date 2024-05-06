@@ -35,6 +35,7 @@ export async function listProblems(): Promise<IProblem[]> {
                     passRate: match[7].trim(),
                     companies: companies[id] || ["Unknown"],
                     tags: tags[id] || ["Unknown"],
+                    studyPlans: []
                 });
             }
         }
@@ -43,6 +44,24 @@ export async function listProblems(): Promise<IProblem[]> {
         await promptForOpenOutputChannel("Failed to list problems. Please open the output channel for details.", DialogType.error);
         return [];
     }
+}
+
+export async function listStudyPlanProblems(studyPlan: string):Promise<any> {
+    if (leetCodeManager.getStatus() === UserStatus.SignedOut) {
+        return [];
+    }
+
+    const result: string = await leetCodeExecutor.studyPlanProblems(studyPlan);
+    const jsonReg: RegExp = /^\{.*\}$/;
+    const lines: string[] = result.split("\n");
+    for (const line of lines) {
+        const match: RegExpMatchArray | null = line.match(jsonReg);
+        if (match ) {
+            return JSON.parse(line);
+        }
+    }
+
+    return {};
 }
 
 function parseProblemState(stateOutput: string): ProblemState {

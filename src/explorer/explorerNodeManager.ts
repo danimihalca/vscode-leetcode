@@ -9,10 +9,19 @@ import { Category, defaultProblem, ProblemState, SortingStrategy } from "../shar
 import { shouldHideSolvedProblem } from "../utils/settingUtils";
 import { LeetCodeNode } from "./LeetCodeNode";
 
+const studyPlansToSearch: string[] = [
+    'top-interview-150',
+    'binary-search',
+    'top-sql-50',
+    'leetcode-75'
+];
+// currently no GraphQL API exists to fetch them all, temporary alternative
+
 class ExplorerNodeManager implements Disposable {
     private explorerNodeMap: Map<string, LeetCodeNode> = new Map<string, LeetCodeNode>();
     private companySet: Set<string> = new Set<string>();
     private tagSet: Set<string> = new Set<string>();
+    private studyPlans: Map<string, Set<string>> = new Map<string, Set<string>>();
 
     public async refreshCache(): Promise<void> {
         this.dispose();
@@ -27,6 +36,22 @@ class ExplorerNodeManager implements Disposable {
             }
             for (const tag of problem.tags) {
                 this.tagSet.add(tag);
+            }
+        }
+
+        for (const plan of studyPlansToSearch) {
+            let studyPlanResult = await list.listStudyPlanProblems(plan);
+            const groupName = studyPlanResult.name;
+            this.studyPlans[groupName] = new Set<string>();
+            console.log(this.explorerNodeMap.size);
+            for (const subGroup of studyPlanResult.planSubGroups) {
+                const subGroupName = subGroup.name;
+                this.studyPlans[groupName].add(subGroupName);
+
+                for (let question of subGroup.questions) {
+                    const questionId: string = question.id;
+                    this.explorerNodeMap.get(questionId)?.studyPlans.push({group:groupName, subgroup:subGroupName});
+                }
             }
         }
     }
@@ -48,6 +73,10 @@ class ExplorerNodeManager implements Disposable {
             new LeetCodeNode(Object.assign({}, defaultProblem, {
                 id: Category.Company,
                 name: Category.Company,
+            }), false),
+            new LeetCodeNode(Object.assign({}, defaultProblem, {
+                id: Category.StudyPlans,
+                name: Category.StudyPlans,
             }), false),
             new LeetCodeNode(Object.assign({}, defaultProblem, {
                 id: Category.Favorite,
@@ -79,6 +108,18 @@ class ExplorerNodeManager implements Disposable {
             }), false),
         );
         this.sortSubCategoryNodes(res, Category.Difficulty);
+        return res;
+    }
+
+    public getAllStudyPlansNodes(): LeetCodeNode[] {
+        const res: LeetCodeNode[] = [];
+        for (const studyPlan in this.studyPlans) {
+            res.push(new LeetCodeNode(Object.assign({}, defaultProblem, {
+                id: `${Category.StudyPlans}.${studyPlan}`,
+                name: studyPlan,
+            }), false))
+        }
+
         return res;
     }
 
@@ -124,6 +165,23 @@ class ExplorerNodeManager implements Disposable {
         // The sub-category node's id is named as {Category.SubName}
         const metaInfo: string[] = id.split(".");
         const res: LeetCodeNode[] = [];
+
+        switch (metaInfo[0]) {
+            case Category.StudyPlans:
+                if (metaInfo.length > 1) {
+                    for (const subgroup of this.studyPlans[metaInfo[1]].values()) {
+                        res.push(new LeetCodeNode(Object.assign({}, defaultProblem, {
+                            id: `${Category.StudyPlanSubgroup}.${metaInfo[1]}.${subgroup}`,
+                            name: subgroup,
+                        }), false))
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
         for (const node of this.explorerNodeMap.values()) {
             switch (metaInfo[0]) {
                 case Category.Company:
@@ -141,6 +199,16 @@ class ExplorerNodeManager implements Disposable {
                         res.push(node);
                     }
                     break;
+
+                case Category.StudyPlanSubgroup:
+                    const group = metaInfo[1];
+                    const subgroup = metaInfo[2];
+
+                    if (node.studyPlans.find(e => e.group === group &&  e.subgroup === subgroup)) {
+                        res.push(node);
+                    }
+                    break;
+
                 default:
                     break;
             }
