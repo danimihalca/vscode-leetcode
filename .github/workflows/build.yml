@@ -24,5 +24,15 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: VSCE Packge
-        run: npx vsce package
+      - name: VSCE Packsge
+        run: |
+          npm install -g @vscode/vsce
+          npx vsce package
+          mkdir dist
+          mv  *.vsix dist/
+
+      - name: Publish Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
