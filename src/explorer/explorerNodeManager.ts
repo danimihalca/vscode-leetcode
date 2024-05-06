@@ -5,15 +5,15 @@ import * as _ from "lodash";
 import { Disposable } from "vscode";
 import * as list from "../commands/list";
 import { getSortingStrategy } from "../commands/plugin";
-import { Category, defaultProblem, ProblemState, SortingStrategy } from "../shared";
+import { Category, defaultProblem, IStudyPlan, ProblemState, SortingStrategy } from "../shared";
 import { shouldHideSolvedProblem } from "../utils/settingUtils";
 import { LeetCodeNode } from "./LeetCodeNode";
 
 const studyPlansToSearch: string[] = [
-    'top-interview-150',
-    'binary-search',
-    'top-sql-50',
-    'leetcode-75'
+    "top-interview-150",
+    "binary-search",
+    "top-sql-50",
+    "leetcode-75",
 ];
 // currently no GraphQL API exists to fetch them all, temporary alternative
 
@@ -40,17 +40,16 @@ class ExplorerNodeManager implements Disposable {
         }
 
         for (const plan of studyPlansToSearch) {
-            let studyPlanResult = await list.listStudyPlanProblems(plan);
-            const groupName = studyPlanResult.name;
+            const studyPlanResult: any = await list.listStudyPlanProblems(plan);
+            const groupName: string = studyPlanResult.name;
             this.studyPlans[groupName] = new Set<string>();
-            console.log(this.explorerNodeMap.size);
             for (const subGroup of studyPlanResult.planSubGroups) {
-                const subGroupName = subGroup.name;
+                const subGroupName: string = subGroup.name;
                 this.studyPlans[groupName].add(subGroupName);
 
-                for (let question of subGroup.questions) {
+                for (const question of subGroup.questions) {
                     const questionId: string = question.id;
-                    this.explorerNodeMap.get(questionId)?.studyPlans.push({group:groupName, subgroup:subGroupName});
+                    this.explorerNodeMap.get(questionId)?.studyPlans.push({group: groupName, subgroup: subGroupName});
                 }
             }
         }
@@ -117,7 +116,7 @@ class ExplorerNodeManager implements Disposable {
             res.push(new LeetCodeNode(Object.assign({}, defaultProblem, {
                 id: `${Category.StudyPlans}.${studyPlan}`,
                 name: studyPlan,
-            }), false))
+            }), false));
         }
 
         return res;
@@ -173,7 +172,7 @@ class ExplorerNodeManager implements Disposable {
                         res.push(new LeetCodeNode(Object.assign({}, defaultProblem, {
                             id: `${Category.StudyPlanSubgroup}.${metaInfo[1]}.${subgroup}`,
                             name: subgroup,
-                        }), false))
+                        }), false));
                     }
                 }
                 break;
@@ -201,10 +200,10 @@ class ExplorerNodeManager implements Disposable {
                     break;
 
                 case Category.StudyPlanSubgroup:
-                    const group = metaInfo[1];
-                    const subgroup = metaInfo[2];
+                    const group: string = metaInfo[1];
+                    const subgroup: string = metaInfo[2];
 
-                    if (node.studyPlans.find(e => e.group === group &&  e.subgroup === subgroup)) {
+                    if (node.studyPlans.find((e: IStudyPlan) => e.group === group &&  e.subgroup === subgroup)) {
                         res.push(node);
                     }
                     break;

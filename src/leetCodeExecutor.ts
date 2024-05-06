@@ -22,7 +22,6 @@ class LeetCodeExecutor implements Disposable {
     constructor() {
         this.leetCodeRootPath = path.join(__dirname, "..", "..", "node_modules", "@danimihalca", "vsc-leetcode-cli");
         this.nodeExecutable = this.getNodePath();
-        console.log(this.nodeExecutable);
         this.configurationChangeListener = workspace.onDidChangeConfiguration((event: ConfigurationChangeEvent) => {
             if (event.affectsConfiguration("leetcode.nodePath")) {
                 this.nodeExecutable = this.getNodePath();

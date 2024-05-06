@@ -35,7 +35,7 @@ export async function listProblems(): Promise<IProblem[]> {
                     passRate: match[7].trim(),
                     companies: companies[id] || ["Unknown"],
                     tags: tags[id] || ["Unknown"],
-                    studyPlans: []
+                    studyPlans: [],
                 });
             }
         }
@@ -46,7 +46,7 @@ export async function listProblems(): Promise<IProblem[]> {
     }
 }
 
-export async function listStudyPlanProblems(studyPlan: string):Promise<any> {
+export async function listStudyPlanProblems(studyPlan: string): Promise<any> {
     if (leetCodeManager.getStatus() === UserStatus.SignedOut) {
         return [];
     }

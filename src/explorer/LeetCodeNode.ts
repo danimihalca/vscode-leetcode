@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 import { Command, Uri } from "vscode";
-import { IProblem, ProblemState, StudyPlan } from "../shared";
+import { IProblem, IStudyPlan, ProblemState } from "../shared";
 
 export class LeetCodeNode {
 
@@ -47,7 +47,7 @@ export class LeetCodeNode {
         return this.isProblemNode;
     }
 
-    public get studyPlans(): StudyPlan[] {
+    public get studyPlans(): IStudyPlan[] {
         return this.data.studyPlans;
     }
 

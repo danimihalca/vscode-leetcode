@@ -70,9 +70,9 @@ export enum Endpoint {
     LeetCodeCN = "leetcode-cn",
 }
 
-export interface StudyPlan {
-    group: string,
-    subgroup: string
+export interface IStudyPlan {
+    group: string;
+    subgroup: string;
 }
 
 export interface IProblem {
@@ -85,7 +85,7 @@ export interface IProblem {
     passRate: string;
     companies: string[];
     tags: string[];
-    studyPlans: StudyPlan[];
+    studyPlans: IStudyPlan[];
 }
 
 export const defaultProblem: IProblem = {
@@ -98,7 +98,7 @@ export const defaultProblem: IProblem = {
     passRate: "",
     companies: [] as string[],
     tags: [] as string[],
-    studyPlans: [] as StudyPlan[]
+    studyPlans: [] as IStudyPlan[],
 };
 
 export enum Category {
@@ -108,7 +108,7 @@ export enum Category {
     Company = "Company",
     Favorite = "Favorite",
     StudyPlans = "Study Plans",
-    StudyPlanSubgroup = "Study Plan Subgroup"
+    StudyPlanSubgroup = "Study Plan Subgroup",
 }
 
 export const supportedPlugins: string[] = [
