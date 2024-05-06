@@ -20,7 +20,9 @@ jobs:
           node-version: 14
 
       - name: Install Node.js modules
-        run: npm install
+        run: |
+          echo '//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGE_DOWNLOAD_TOKEN }}' > .npmrc
+          npm install
 
       - name: Lint
         run: npm run lint
